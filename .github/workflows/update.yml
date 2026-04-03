@@ -1,0 +1,38 @@
+name: Update Index Components
+
+on:
+  schedule:
+    - cron: '0 12 * * 1'  # Every Monday at noon UTC (8am ET)
+  workflow_dispatch:       # Also allows manual trigger from the GitHub UI
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run scraper
+        run: python scraper.py
+
+      - name: Commit and push if data changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          git diff --staged --quiet && echo "No changes." || (
+            git commit -m "Update index components $(date -u +'%Y-%m-%d')" &&
+            git push
+          )
