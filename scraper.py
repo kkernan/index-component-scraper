@@ -1,19 +1,13 @@
-import requests
+import io
+import re
+
+import cloudscraper
 import pandas as pd
 from pathlib import Path
 
 DATA_DIR = Path(__file__).parent / "data"
 DATA_DIR.mkdir(exist_ok=True)
 
-HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/124.0.0.0 Safari/537.36"
-    ),
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    "Accept-Language": "en-US,en;q=0.5",
-}
 
 SOURCES = {
     "sp500": "https://www.slickcharts.com/sp500",
@@ -22,11 +16,17 @@ SOURCES = {
 
 
 def fetch_table(url: str) -> pd.DataFrame:
-    response = requests.get(url, headers=HEADERS, timeout=30)
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(url, timeout=30)
     response.raise_for_status()
     # slickcharts puts the components table first on each page
-    tables = pd.read_html(response.text)
-    return tables[0]
+    tables = pd.read_html(io.StringIO(response.text))
+    df = tables[0]
+    # Strip non-ASCII characters from column names and string values
+    df.columns = [re.sub(r'[^\x20-\x7E]', '', c).strip() for c in df.columns]
+    for col in df.select_dtypes(include=['object', 'str']).columns:
+        df[col] = df[col].astype(str).apply(lambda x: re.sub(r'[^\x20-\x7E]', '', x).strip())
+    return df
 
 
 def main():
