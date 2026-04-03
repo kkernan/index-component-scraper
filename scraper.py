@@ -26,7 +26,9 @@ def fetch_table(url: str) -> pd.DataFrame:
     df.columns = [re.sub(r'[^\x20-\x7E]', '', c).strip() for c in df.columns]
     for col in df.select_dtypes(include=['object', 'str']).columns:
         df[col] = df[col].astype(str).apply(lambda x: re.sub(r'[^\x20-\x7E]', '', x).strip())
-    return df.drop(columns=['Company'])
+    df = df.drop(columns=['Company'])
+    df['% Chg'] = df['% Chg'].astype(str).str.replace(r'[()]', '', regex=True)
+    return df
 
 
 def main():
