@@ -1,3 +1,5 @@
 cloudscraper
 pandas
 lxml
+schwab-py
+python-dotenv
