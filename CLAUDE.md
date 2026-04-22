@@ -11,6 +11,7 @@ Weekly scrapes S&P 500 and NASDAQ 100 component tables from slickcharts.com and 
 Python 3.12, `.venv` managed by PyCharm.
 
 ```bash
+source .venv/bin/activate       # Linux/macOS
 source .venv/Scripts/activate   # Git Bash on Windows
 pip install -r requirements.txt
 ```
