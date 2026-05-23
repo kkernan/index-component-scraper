@@ -17,6 +17,7 @@ SLICKCHARTS_SOURCES = {
 
 STOCKANALYSIS_SOURCES = {
     "smh": "https://stockanalysis.com/etf/smh/holdings/",
+    "xlg": "https://stockanalysis.com/etf/xlg/holdings/",
 }
 
 
