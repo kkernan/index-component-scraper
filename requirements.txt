@@ -1,5 +1,6 @@
 cloudscraper
 pandas
 lxml
+openpyxl
 schwab-py
 python-dotenv
